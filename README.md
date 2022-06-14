@@ -40,8 +40,9 @@ For the latest updates of FlareML refer to https://github.com/deepsuncode/SEP-pr
 
 |Library | Version   | Description  |
 |---|---|---|
-|matplotlib|3.4.2| Graphics and visualization|
+|keras| 2.6.0 | Deep learning API|
 |numpy| 1.19.5| Array manipulation|
-|scikit-learn| 0.24.2| Machine learning|
-| sklearn-extensions | 0.0.2  | Extension for scikit-learn |
-| pandas|1.2.4| Data loading and manipulation|
+|scikit-learn| 1.0.1| Machine learning|
+| pandas|1.4.1| Data loading and manipulation|
+| tensorboard| 2.8.0| Provides the visualization and tooling needed for machine learning|
+| tensorflow-gpu| 2.6.0| Deep learning tool for high performance computation |
