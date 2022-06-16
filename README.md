@@ -27,8 +27,8 @@ empirical evaluation.
 This notebook is Binder enabled and can be run on [mybinder.org](https://mybinder.org/) by using the link below.
 
 
-### ccs_SEP-prediction.ipynb (Jupyter Notebook for SEP-prediction)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ccsc-tools/SEP-prediction/HEAD?labpath=ccsc_SEP-prediction.ipynb)
+### YA_01_PredictingSEPUsingBiLSTM.ipynb (Jupyter Notebook for SEP-prediction)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ccsc-tools/SEP-prediction/HEAD?labpath=YA_01_PredictingSEPUsingBiLSTM.ipynb)
 
 Please note that starting Binder might take some time to create and start the image.
 
