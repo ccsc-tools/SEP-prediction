@@ -660,5 +660,5 @@ def print_summary_to_file(s):
         print(s, file=f)
         
 create_log_file('BiLSTM', '', '',dir_name='logs')
-log('********************************  Executing Python program  ********************************',verbose=True)  
+#log('********************************  Executing Python program  ********************************',verbose=True)  
     

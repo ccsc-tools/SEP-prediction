@@ -4,3 +4,14 @@ Importing packages..
 [2022-06-16 16:23:56] ********************************  Executing Python program: ipykernel_launcher.py   ******************************** 
 Importing packages..
 [2022-06-16 16:26:26] ********************************  Executing Python program  ******************************** 
+Test default models for first classification type FC_S and for all time windows: 12 to 72..
+Test default models for first classification type FC_S and for all time windows: 12 to 72..
+Running classification test type: FC_S  training for h = 12 hour ahead
+
+Error: testing data file does not exist: data/events_fc_testing_12.csv
+Importing packages..
+Test default models for first classification type FC_S and for all time windows: 12 to 72..
+Running classification test type: FC_S  training for h = 12 hour ahead
+testing data file: data/events_fc_testing_12.csv
+
+Error: testing data file does not exist: data/events_fc_testing_12.csv

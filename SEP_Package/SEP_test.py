@@ -47,11 +47,12 @@ cm_target_dir='results'
 # to always predict using the default models.
 models_directory=None
 
-def test(e_type, start_hour, end_hour):
+def test(e_type, start_hour, end_hour,models_directory=models_directory):
     for k in range(start_hour,end_hour,12):
         print('Running classification test type:', e_type,' training for h =', k, 'hour ahead')
         time_window = k 
         testing_data_file = 'data/events_' + str(e_type).replace('_S','').lower() + '_testing_' + str(time_window) + '.csv' 
+        print('testing data file:', testing_data_file)
         if not os.path.exists(testing_data_file):
             log('Error: testing data file does not exist:', testing_data_file)
             print('\nError: testing data file does not exist:', testing_data_file)
