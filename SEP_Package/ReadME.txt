@@ -11,7 +11,7 @@ You may use the following link if still available in the Python download site to
 https://www.python.org/downloads/release/python-397/
 
 Python Packages:
-The following python packages and modules are required to run DSTT:
+The following python packages and modules are required to run SEP BiLSTM:
 tensorboard==2.8.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
@@ -34,7 +34,7 @@ Cuda Installation Package:
 You may download and install Cuda v 11.0 from https://developer.nvidia.com/cuda-11.0-download-archive
 
 Package Structure
-After downloading the zip files from https://web.njit.edu/~wangj/SEPBiLSTM/, unzip the files into a directory so that the SEP BiLSTM package includes the following folders and files:
+After downloading the files from github repository: https://github.com/deepsuncode/SEP-prediction the SEP_Package package includes the following folders and files:
  
  ReadMe.txt                    - this ReadMe file.
  requirements.txt              - includes Python required packages for Python version 3.9.7.
