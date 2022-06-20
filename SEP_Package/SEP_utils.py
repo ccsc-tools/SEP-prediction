@@ -111,7 +111,7 @@ def set_verbose(b):
     global g_verbose
     g_verbose = b
     
-def log(*message,verbose=verbose,format_logging=True, end=' '):
+def log(*message,verbose=verbose,format_logging=False, end=' '):
     log_str = []
     global g_verbose
     if verbose or g_verbose:
@@ -520,7 +520,6 @@ def calc_confusion_matrix(y_true,
         
         log(cm_table_str)
         if log_to_file :
-            os.makedirs(os.path.abspath(cm_file),exist_ok=True)
             log('Saving the performance metrics to files:',  cm_file,verbose=True)
             h = open(cm_file,'w')
             h.write(str(','.join(cols)).strip() + '\n')
@@ -659,7 +658,10 @@ def print_summary_to_file(s):
     global log_file
     with open(log_file,'a') as f:
         print(s, file=f)
-        
+
+def set_log_timestamp(t):
+    global format_logging
+    format_logging = t
 create_log_file('BiLSTM', '', '',dir_name='logs')
 #log('********************************  Executing Python program  ********************************',verbose=True)  
     

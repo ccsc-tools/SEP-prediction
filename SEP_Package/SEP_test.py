@@ -41,7 +41,7 @@ from SEP_model import SEPModel
 time_windows = [12,24,36,48,60,72]
 model_to_save = None
 cm_target_dir='results'
-
+os.makedirs(cm_target_dir,  exist_ok=True)
 #You may update the following line to:
 #models_directory='default_models'
 # to always predict using the default models.
@@ -86,7 +86,6 @@ def test(e_type, start_hour, end_hour,models_directory=models_directory):
         calibration_curve(y_test, cal_pred,
                           n_bins=10, 
                           normalize=True)
-        
         save_prediction_results(e_type, time_window, y_test, predictions, cal_pred)
         result, cols = calc_confusion_matrix(y_test,
                                              predictions, 
@@ -95,7 +94,7 @@ def test(e_type, start_hour, end_hour,models_directory=models_directory):
                                              probs_array=predictions_proba[:],
                                              probs_calibrated = cal_pred, 
                                              is_one_d=True)
-
+        print('-------------------------------------------------------\n')
 
 if __name__ == '__main__':
     starting_hour = 12
