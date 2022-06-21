@@ -643,6 +643,11 @@ def weighted_auc(tpr, fpr, alg='BiLSTM'):
         
     return (competition_metric / normalization)*0.9
 
+def get_val_as_string(l):
+    if l == 0:
+        return "False"
+    return "True"
+
 def save_prediction_results(e_type, time_window, y_true,y_pred, y_calibrated_prop):
     os.makedirs('results',exist_ok=True)
     predictions_file= 'results' + os.sep + 'SEP_prediction_results_'+ str(e_type) +'_' + str(time_window) +'.csv'
@@ -650,7 +655,9 @@ def save_prediction_results(e_type, time_window, y_true,y_pred, y_calibrated_pro
     h =open(predictions_file,'w')
     h.write('Label,Prediction,CalibratedProbability\n')
     for i in range(len(y_true)):
-        h.write(str(y_true[i]) + ',' + str(y_pred[i])  + ',' + str(y_calibrated_prop[i])+ '\n')
+        t = get_val_as_string(y_true[i])
+        p = get_val_as_string(y_pred[i])
+        h.write(str(t) + ',' + str(p)  + ',' + str(y_calibrated_prop[i])+ '\n')
     h.flush()
     h.close()
 
