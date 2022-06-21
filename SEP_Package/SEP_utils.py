@@ -645,8 +645,8 @@ def weighted_auc(tpr, fpr, alg='BiLSTM'):
 
 def get_val_as_string(l):
     if l == 0:
-        return "False"
-    return "True"
+        return "N"
+    return "P"
 
 def save_prediction_results(e_type, time_window, y_true,y_pred, y_calibrated_prop):
     os.makedirs('results',exist_ok=True)
