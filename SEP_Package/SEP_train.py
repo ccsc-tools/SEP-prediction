@@ -48,7 +48,7 @@ iterations = 5
 
 total_epochs =  iterations
 
-
+check_gpu()
 
 cm_target_dir='results'
 prev_tss = -200000.0
@@ -57,7 +57,7 @@ tss_threshold = 0.99
 
 verbose=False
 
-def train(e_type, start_hour, end_hour):
+def train_model(e_type, start_hour, end_hour):
     dir_name='temp'
     delete_dir(dir_name)
     for k in range(start_hour,end_hour,12):
@@ -67,12 +67,12 @@ def train(e_type, start_hour, end_hour):
         training_data_file = 'data/events_' + str(e_type).replace('_S','').lower() + '_training_' + str(time_window) + '.csv'
         testing_data_file = 'data/events_' + str(e_type).replace('_S','').lower() + '_testing_' + str(time_window) + '.csv'         
         if not os.path.exists(training_data_file):
-            log('Error: required training data file does not exist:', training_data_file)
+            print('Error: required training data file does not exist:', training_data_file)
             print('\nError: required training data file does not exist:', training_data_file)
             exit()
 
         if not os.path.exists(testing_data_file):
-            log('Error: required testing data file does not exist:', testing_data_file)
+            print('Error: required testing data file does not exist:', testing_data_file)
             print('\nError: required testing data file does not exist:', testing_data_file)
             exit()
                         
@@ -81,23 +81,13 @@ def train(e_type, start_hour, end_hour):
         
         x_test, y_test, nb_test, columns = load_data(datafile= testing_data_file)
         x_train_orig, y_train_orig = x_train[:], y_train[:] 
-        log('nb_train:', nb_train)
-        log('x_train.shape:', x_train.shape)
-        log('y_train.shape:', y_train.shape)
-        log('x_test.shape:', x_test.shape)
-        log('y_test.shape:', y_test.shape)
-        log('nb_test:', nb_test)
         x_train_ex = np.append(x_train, x_test)
         s1 = len(x_train_ex)//(x_train.shape[1]*x_train.shape[2])
         s2 = x_train.shape[1]
         s3 = x_train.shape[2]
         x_train = x_train_ex.reshape((s1,s2,s3))
-        # x_train= x_train_ex
         y_train = np.append(y_train,y_test)
-        log('x_train.shape:', x_train.shape)
-        log('y_train.shape:', y_train.shape)
-        log('x_test.shape:', x_test.shape)
-        log('y_test.shape:', y_test.shape)   
+  
     
         
         class_weights = class_weight.compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
@@ -124,9 +114,7 @@ def train(e_type, start_hour, end_hour):
             model = SEPModel()
             model.build_base_model(input_shape )
             model.models()
-            model.compile()
-            model.summary()
-            
+            model.compile()            
             history = model.fit(x_train, y_train)
             model.save_weights(e_type,time_window,w_dir=None)
             models.append(model)
@@ -139,8 +127,6 @@ def train(e_type, start_hour, end_hour):
             fop, mpv = calibration_curve(y_test, predictions_proba, n_bins=10, normalize=True)
             ir = IR()
             predictions_proba = predictions_proba.reshape(predictions_proba.shape[0])
-            log('predictions_proba shape:', predictions_proba.shape)
-            log('y_test shape: ', y_test.shape)
             ir.fit(predictions_proba,y_test)
             cal_pred = ir.predict(predictions_proba)
             fop, mpv = calibration_curve(y_test, cal_pred, n_bins=10, normalize=True)
@@ -152,7 +138,6 @@ def train(e_type, start_hour, end_hour):
                                                  probs_calibrated = cal_pred, is_one_d=True)
 
             if float(result['TSS']) >= tss_threshold:
-                log('Breaking iterations at #:', (i+1))
                 model_to_save = model
                 tss = float(result['TSS']) 
                 model.save_weights(e_type,time_window,w_dir=None)
@@ -168,17 +153,15 @@ def train(e_type, start_hour, end_hour):
                 file_ext = ''
             alg ='bilstm'
             model_name = dir_name + '/' + alg +'_model_' + str(e_type) + '_' + str(time_window) + 'hr_tss_' + str(tss) +  str(file_ext)
-            log('Saving the final model to:', model_name , ' with TSS values: prev_tss = ', prev_tss, 'current_tss:', current_tss, 'at iteration #:', c_iter,verbose=verbose)
             model_saved_tss, prev_file_name = get_existing_model_tss(alg,e_type, time_window, dir_name=dir_name)
-            log('prev_file_name for tss:', prev_file_name,verbose=verbose)
             if tss > model_saved_tss:
-                log('Saving the model because it has greater than tss previous value, tss:', tss, 'model_saved_tss:', model_saved_tss,verbose=verbose)
                 delete_file(prev_file_name)
                 model_to_save.save(model_name)
                 model.save_weights(e_type,time_window,w_dir=None)
             else:
-                log('The model has less tss than or equal previous value, will not save it, tss:', tss, 'model_saved_tss:', model_saved_tss,verbose=verbose)
+                print('')
             prev_tss  = float(result['TSS']) 
+    print('Finished training.\n---------------------------------------------\n')
     delete_dir(dir_name)
 
 if __name__ == '__main__':
@@ -202,4 +185,4 @@ if __name__ == '__main__':
         print('Invalid training hour:', starting_hour,'\nHours must be one of: ', time_windows)
         exit() 
     print('Starting hour:', starting_hour, 'ending hour:', ending_hour-1)
-    train(e_type, starting_hour, ending_hour)
+    train_model(e_type, starting_hour, ending_hour)

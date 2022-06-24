@@ -26,7 +26,7 @@ import tensorflow as tf
 try:  
     tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 except Exception as e:
-    log('')
+    print('')
 import numpy as np
 from datetime import datetime, timedelta
 import argparse
@@ -58,9 +58,9 @@ class SEPModel:
         callbacks = [EarlyStopping(monitor='loss', patience=early_stopping_patience)]
 
     if tf.test.gpu_device_name() != '/device:GPU:0':
-      log('WARNING: GPU device not found.')
+      print('WARNING: GPU device not found.')
     else:
-        log('SUCCESS: Found GPU: {}'.format(tf.test.gpu_device_name()))
+        print('SUCCESS: Found GPU: {}'.format(tf.test.gpu_device_name()))
         physical_devices = tf.config.list_physical_devices('GPU')
         if len(physical_devices ) > 0:
             tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
@@ -86,7 +86,7 @@ class SEPModel:
         self.model = models.Model(self.input, self.model)
         
     def summary(self):
-        self.model.summary(print_fn=print_summary_to_file)
+        self.model.summary()
     
     def compile(self,loss='binary_crossentropy',metrics=['accuracy'], adam_lr=0.001):
         self.model.compile(optimizer=tf.optimizers.Adam(learning_rate=adam_lr),loss=loss, metrics=metrics)
@@ -129,7 +129,6 @@ class SEPModel:
         weight_dir = 'models' + os.sep + 'sep_model_' + str(e_type) + '_' + str(time_window) + 'hr'
         if w_dir is not None:
             weight_dir = w_dir +  os.sep + 'sep_model_' + str(e_type) + '_' + str(time_window) + 'hr'
-        log('Saving weights from model dir:', weight_dir)
         if os.path.exists(weight_dir):
             shutil.rmtree(weight_dir)
         os.makedirs(weight_dir)
@@ -140,14 +139,14 @@ class SEPModel:
         weight_dir = 'models' + os.sep + 'sep_model_' + str(e_type) + '_' + str(time_window) + 'hr'
         if w_dir is not None:
             weight_dir = w_dir +  os.sep + 'sep_model_' + str(e_type) + '_' + str(time_window) + 'hr'
-        log('Loading weights from model dir:', weight_dir)
+        print('Loading weights from model dir:', weight_dir)
         if not os.path.exists(weight_dir):
-            log( 'Error: Model weights directory does not exist:', weight_dir,verbose=True,format_logging=False)
+            print( 'Error: Model weights directory does not exist:', weight_dir)
             if not w_dir == 'default_models':
-                log('Trying pre trained default models directory: default_models' ,verbose=True,format_logging=False)
+                print('Trying pre trained default models directory: default_models')
                 weight_dir = 'default_models' +  os.sep + 'sep_model_' + str(e_type) + '_' + str(time_window) + 'hr'
                 if not os.path.exists(weight_dir):
-                    log( 'Error: Model weights for default directory does not exist:', weight_dir,verbose=True,format_logging=False)
+                    print( 'Error: Model weights for default directory does not exist:', weight_dir)
                     exit()
             else:
                 exit()
@@ -155,7 +154,7 @@ class SEPModel:
         if self.model == None :
             print('Error: You must train a model first before loading the weights.')
             exit()
-        log('Loading weights from:', weight_dir + os.sep + 'model_weights',verbose=True)      
+        print('Loading weights from:', weight_dir + os.sep + 'model_weights')      
         self.model.load_weights(weight_dir + os.sep + 'model_weights').expect_partial()
     
     def load_model(self,input_shape=(series_len,n_features),
@@ -180,7 +179,7 @@ class SEPModel:
         os.makedirs(dir_name,  exist_ok=True)
     
     def build_model(self,w):
-        log('Building model for:', w,verbose=True)
+        print('Building model for:', w)
         from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
         from tensorflow.python.training import py_checkpoint_reader
         reader = py_checkpoint_reader.NewCheckpointReader(w)

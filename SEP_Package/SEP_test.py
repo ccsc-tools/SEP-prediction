@@ -17,7 +17,6 @@
  @author: Yasser Abduallah
 '''
 
-from __future__ import print_function
 import warnings
 warnings.filterwarnings("ignore")
 import os
@@ -41,7 +40,6 @@ from SEP_model import SEPModel
 time_windows = [12,24,36,48,60,72]
 model_to_save = None
 cm_target_dir='results'
-os.makedirs(cm_target_dir,  exist_ok=True)
 #You may update the following line to:
 #models_directory='default_models'
 # to always predict using the default models.
@@ -54,14 +52,13 @@ def test(e_type, start_hour, end_hour,models_directory=models_directory):
         testing_data_file = 'data/events_' + str(e_type).replace('_S','').lower() + '_testing_' + str(time_window) + '.csv' 
         print('testing data file:', testing_data_file)
         if not os.path.exists(testing_data_file):
-            log('Error: testing data file does not exist:', testing_data_file)
+            print('Error: testing data file does not exist:', testing_data_file)
             print('\nError: testing data file does not exist:', testing_data_file)
             exit()
                  
         model = SEPModel()
-        log('Loading the model and its weights.', verbose=verbose)
+        print('Loading the model and its weights.')
         model.load_model(e_type=e_type,time_window=time_window, w_dir=models_directory)
-        model.summary()
         n_features = model.input_shape[1]
         series_len = model.input_shape[0]
         x_test, y_test, nb_test, columns = load_data(datafile = testing_data_file, 
@@ -71,7 +68,7 @@ def test(e_type, start_hour, end_hour,models_directory=models_directory):
         predictions_atten_classes=(predictions_atten_proba> 0.5).astype("int32")         
         predictions = np.array(predictions_atten_classes).reshape(len(predictions_atten_classes)).tolist()
         
-        log('Prediction and calibration..', verbose=verbose)
+        print('Prediction and calibration..')
         predictions_proba = predictions_atten_proba
         calibration_curve(y_test, 
                           predictions_proba, 
@@ -79,14 +76,20 @@ def test(e_type, start_hour, end_hour,models_directory=models_directory):
                           normalize=True)
         ir = IR()
         predictions_proba = predictions_proba.reshape(predictions_proba.shape[0])
-        log('predictions_proba shape:', predictions_proba.shape, verbose=verbose)
-        log('y_test shape: ', y_test.shape, verbose=verbose)
+        # print('predictions_proba shape:', predictions_proba.shape)
+        # print('y_test shape: ', y_test.shape)
         ir.fit(predictions_proba,y_test)
         cal_pred = ir.predict(predictions_proba)
         calibration_curve(y_test, cal_pred,
                           n_bins=10, 
                           normalize=True)
-        save_prediction_results(e_type, time_window, y_test, predictions, cal_pred)
+        cm_target_dir = 'results'
+        result_dir = 'results'
+        if models_directory == 'default_models':
+            cm_target_dir='default_results'
+            result_dir='default_results'
+        os.makedirs(cm_target_dir,  exist_ok=True)
+        save_prediction_results(e_type, time_window, y_test, predictions, cal_pred,result_dir=result_dir)
         result, cols = calc_confusion_matrix(y_test,
                                              predictions, 
                                              time_window, e_type,epochs=0,test_year='',
@@ -101,7 +104,7 @@ if __name__ == '__main__':
     ending_hour = 73
     e_type = 'FC_S'
     if len(sys.argv) < 2:
-        print('Using default parameters: classification type is:', e_type, ' time windows to train:', time_windows)
+        print('Using default parameters: classification type is:', e_type, ' time windows to test:', time_windows)
     
     if len(sys.argv) >= 2  :
         e_type = sys.argv[1].strip().upper()

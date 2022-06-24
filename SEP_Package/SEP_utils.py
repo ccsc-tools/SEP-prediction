@@ -32,6 +32,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from sklearn.metrics import brier_score_loss
 from tensorflow.keras.regularizers import l1, l2
+import matplotlib.pyplot as plt
 import os 
 import time 
 import math 
@@ -59,44 +60,65 @@ series_len=10
 
 
 tf_version = tf.__version__
-print('Tensorflow bakcend version:',tf_version )
+# print('Tensorflow bakcend version:',tf_version )
 if tf.test.gpu_device_name() != '/device:GPU:0':
   print('WARNING: GPU device not found.')
 else:
-    print('SUCCESS: Found GPU: {}'.format(tf.test.gpu_device_name()))
+    # print('SUCCESS: Found GPU: {}'.format(tf.test.gpu_device_name()))
     physical_devices = tf.config.list_physical_devices('GPU')
     if len(physical_devices ) > 0:        
         physical_devices = tf.config.experimental.list_physical_devices('GPU')
         tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
 c_date = datetime.now()
 
+def check_gpu():
+    tf_version = tf.__version__
+    print('Tensorflow bakcend version:',tf_version )
+    if tf.test.gpu_device_name() != '/device:GPU:0':
+      print('WARNING: GPU device not found.')
+      print('Training may take a lot longer than it should be because the device does not have GPU.')
+    else:
+        print('SUCCESS: Found GPU: {}'.format(tf.test.gpu_device_name()))
+        physical_devices = tf.config.list_physical_devices('GPU')
+        if len(physical_devices ) > 0:        
+            physical_devices = tf.config.experimental.list_physical_devices('GPU')
+            tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
+    c_date = datetime.now()
+
+def check_package_dir():
+    if os.path.exists('SEP_Package'):
+        print('Changing working directory to SEP_Package..')
+        os.chdir('SEP_Package')
+    import sys
+    sys.path.append('.')
+    
 def create_log_file(alg, t_window, d_type, dir_name='logs'):
     os.makedirs(dir_name, exist_ok=True)
-    global log_handler
-    global log_file
-    try:
-        log_file = dir_name + '/SEP_run_'  + str(c_date.month) + '-' + str(c_date.day) + '-' + str(c_date.year) +  '.log'
-    except Exception as e:
-        print('creating default logging file..')
-        log_file = dir_name + '/SEP_run_'  + str(c_date.month) + '-' + str(c_date.day) + '-' + str(c_date.year) +  '.log'
-    log_handler = open(log_file,'a')
-    sys.stdout = Logger(log_handler)  
-    log('')
+    # global log_handler
+    # global log_file
+    # try:
+    #     log_file = dir_name + '/SEP_run_'  + str(c_date.month) + '-' + str(c_date.day) + '-' + str(c_date.year) +  '.log'
+    # except Exception as e:
+    #     print('creating default logging file..')
+    #     log_file = dir_name + '/SEP_run_'  + str(c_date.month) + '-' + str(c_date.day) + '-' + str(c_date.year) +  '.log'
+    # log_handler = open(log_file,'a')
+    # sys.stdout = Logger(log_handler)  
+    # print('')
 
-class Logger(object):
-    def __init__(self,logger):
-        self.terminal = sys.stdout
-        self.log = logger
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)  
-
-    def flush(self):
-        #this flush method is needed for python 3 compatibility.
-        #this handles the flush command by doing nothing.
-        #you might want to specify some extra behavior here.
-        pass  
+# class Logger(object):
+#     def __init__(self,logger):
+#         self.terminal = sys.stdout
+#         self.log = logger
+#
+#     def write(self, message):
+#         self.terminal.write(message)
+#         self.log.write(message)  
+#
+#     def flush(self):
+#         #this flush method is needed for python 3 compatibility.
+#         #this handles the flush command by doing nothing.
+#         #you might want to specify some extra behavior here.
+#         pass  
 
 def truncate_float(number, digits=4) -> float:
     try :
@@ -111,16 +133,16 @@ def set_verbose(b):
     global g_verbose
     g_verbose = b
     
-def log(*message,verbose=verbose,format_logging=False, end=' '):
-    log_str = []
-    global g_verbose
-    if verbose or g_verbose:
-        if format_logging:
-            print('[' + str(datetime.now().replace(microsecond=0))  +'] ', end='')
-        for m in message:
-            print(m,end=end)
-        print('')
-    log_handler.flush()
+# def print(*message,verbose=verbose,format_logging=False, end=' '):
+#     log_str = []
+#     global g_verbose
+#     if verbose or g_verbose:
+#         if format_logging:
+#             print('[' + str(datetime.now().replace(microsecond=0))  +'] ', end='')
+#         for m in message:
+#             print(m,end=end)
+#         print('')
+#     log_handler.flush()
     
 def parse_time(time):
     time = str(time).strip()
@@ -157,13 +179,13 @@ def remove_new_line(s):
     return str(s)
 
 def get_data_with_filter(datafile, column=None, value=None,cols_list=None):
-    # log('Loading data from file:' , datafile)
+    # print('Loading data from file:' , datafile)
 
     if cols_list == None:
         return pd.read_csv(datafile)
     data =  pd.read_csv(datafile,usecols=cols_list)
     data = data.reindex(columns=cols_list)
-    log('data.cols from list:', data.columns) 
+    print('data.cols from list:', data.columns) 
     return data
 
 
@@ -180,22 +202,22 @@ def load_data(datafile,
               add_ar=False, 
               remove_positive=False,
               cols_list=None):
-    log('Loading data from data file:', datafile)
+    print('Loading data from data file:', datafile)
     if not os.path.exists(datafile):
-        log('Error Data file does not exist:', datafile)
+        print('Error Data file does not exist:', datafile)
         print('\nError: Data file does not exist:', datafile)
         exit()
     df = get_data_with_filter(datafile, column=column, value=value,cols_list=cols_list)
     if  column is not None and value is not None:
-        log('Filtering data the data with filters: ' , column , value)
+        print('Filtering data the data with filters: ' , column , value)
         if operator == 'eq':
             df = df.loc[df[column] == value].reset_index()
         else:
             df = df.loc[df[column].str.contains('|'.join(value)) ].reset_index()
     if remove_positive:
-        log('Removing Positive labels for Rare Event Autoencoder, size before:', len(df))
+        print('Removing Positive labels for Rare Event Autoencoder, size before:', len(df))
         df = df.loc[df['Flare'] != 'P'].reset_index()
-        log('Size after removing Positive:', len(df))
+        print('Size after removing Positive:', len(df))
     return load_datasets(df, series_len, start_feature, n_features, mask_value, stride, stride2, column=None, value=None, add_ar=add_ar)
 
 def load_datasets(df, 
@@ -227,7 +249,7 @@ def load_datasets(df,
     n_pos = 0
     for idx in range(0, len(df_values)):
         if np.mod(idx, stride2) != 0:
-#             log('here')
+#             print('here')
             continue
         each_series_data = []
         row = df_values[idx]
@@ -334,8 +356,8 @@ def calc_confusion_matrix(y_true,
     
     cnn_type='BiLSTM'
     alg='BiLSTM'
-    log('y_true distinct:', list(set(y_true)))
-    log('y_pred distinct:', list(set(y_pred)))
+    # print('y_true distinct:', list(set(y_true)))
+    # print('y_pred distinct:', list(set(y_pred)))
     if len(list(set(y_pred))) == 1:
         #avoid any division by zero when it's in test mode.
         p0 = list(set(y_pred))[0]
@@ -349,8 +371,8 @@ def calc_confusion_matrix(y_true,
     cm = confusion_matrix(y_true, y_pred)
 
     cm_table_str, TP, TN, FP, FN = get_confusion_matrix_table(y_true,y_pred)
-    log('CM:', cm, 'len(CM):', len(cm))
-    log(cm_table_str)
+    # print('CM:', cm, 'len(CM):', len(cm))
+    # print(cm_table_str)
     P = TP + FN 
     N = TN + FP
     T = N + P 
@@ -377,7 +399,7 @@ def calc_confusion_matrix(y_true,
             else:
                 b = probs_array[:, 1]
              
-            log('Calculating the BS')
+            # print('Calculating the BS')
             def getVal(i):
                 if math.isnan(i):
                     i = 0                
@@ -404,7 +426,7 @@ def calc_confusion_matrix(y_true,
             else:
                 b = probs_calibrated[:, 1]
              
-            log('Calculating the BS')
+            # print('Calculating the BS')
             def getVal(i):
                 if math.isnan(i):
                     i = 0
@@ -443,39 +465,39 @@ def calc_confusion_matrix(y_true,
         auc_val = truncate_float(metrics.auc(fpr, tpr))
         wauc = 'N/A'
         wauc = truncate_float(weighted_auc(np.array(tpr), np.array(fpr),alg))
-        log('roc_curve thresholds:', thresholds)
-        log('Epochs', epochs)
-        log('SN',series_len)
-        if n_splits is not None:
-            log('NPS',n_splits)
-        if test_year is not None:
-            log("TY",test_year)
-        log('T:', T) 
-        log('N:', N) 
-        log('P:', P)
-        log('TP:',(TP)) 
-        log('TN:',(TN)) 
-        log('FP:', (FP)) 
-        log('FN:', (FN)) 
-        log('ACC:',truncate_float(accuracy)) 
-        log('BAC:', truncate_float(balanced_accuracy))
-        log('Pre:', truncate_float(precision)) 
-        log('Rec:', truncate_float(recall)) 
-        log('TSS:', truncate_float(TSS))
-        log('TPR:', truncate_float(TPR))
-        log('FPR:', truncate_float(FPR))
-        log('GMEAN:', truncate_float(GMEAN))
-        log('BS:', BS)
-        log('BSS:', BSS)
-        log('BSC:', BSC)
-        log('BSSC:', BSSC)
-        log('FPRA:', 'S'.join([str(truncate_float(s)) for s in fpr]))
-        log('TPRA:', 'S'.join([str(truncate_float(s)) for s in tpr]))
-        log('AUC:', auc_val)
-        log('WAUC:', wauc)
-        log('sampling_type:', sampling_type)
-        log('n_features:', n_features)
-        log('ApSS:', truncate_float(ApSS))
+        # print('roc_curve thresholds:', thresholds)
+        # print('Epochs', epochs)
+        # print('SN',series_len)
+        # if n_splits is not None:
+        #     print('NPS',n_splits)
+        # if test_year is not None:
+        #     print("TY",test_year)
+        # print('T:', T) 
+        # print('N:', N) 
+        # print('P:', P)
+        # print('TP:',(TP)) 
+        # print('TN:',(TN)) 
+        # print('FP:', (FP)) 
+        # print('FN:', (FN)) 
+        # print('ACC:',truncate_float(accuracy)) 
+        # print('BAC:', truncate_float(balanced_accuracy))
+        # print('Pre:', truncate_float(precision)) 
+        # print('Rec:', truncate_float(recall)) 
+        # print('TSS:', truncate_float(TSS))
+        # print('TPR:', truncate_float(TPR))
+        # print('FPR:', truncate_float(FPR))
+        # print('GMEAN:', truncate_float(GMEAN))
+        # print('BS:', BS)
+        # print('BSS:', BSS)
+        # print('BSC:', BSC)
+        # print('BSSC:', BSSC)
+        # print('FPRA:', 'S'.join([str(truncate_float(s)) for s in fpr]))
+        # print('TPRA:', 'S'.join([str(truncate_float(s)) for s in tpr]))
+        # print('AUC:', auc_val)
+        # print('WAUC:', wauc)
+        # print('sampling_type:', sampling_type)
+        # print('n_features:', n_features)
+        # print('ApSS:', truncate_float(ApSS))
         p_dic = [{'Algorithm':cnn_type,
                   'eType':str(e_type), 
                   'SN':str(series_len),
@@ -508,7 +530,7 @@ def calc_confusion_matrix(y_true,
                   }]
     
         cols = ['Algorithm','eType','TW', 'T','P','N','TP','TN','FP','FN','ACC','BACC','Pre','Rec',
-                'TSS','HSS','AUC','WAUC','BSS','BSSC']
+                'TSS','HSS','AUC','WAUC','BSC','BSSC']
                 
         cols_print = cols[:]
         p_df = pd.DataFrame(p_dic,index=None, columns=cols)
@@ -516,11 +538,11 @@ def calc_confusion_matrix(y_true,
         
         p_df_print = pd.DataFrame(p_dic,index=None, columns=cols_print)
         res_value_print = p_df_print.to_csv(sep='\t', index=False)    
-        log('Full Confusion Matrix Data Frame\n',res_value_print)
+        # print('Full Confusion Matrix Data Frame\n',res_value_print)
         
-        log(cm_table_str)
+        # print(cm_table_str)
         if log_to_file :
-            log('Saving the performance metrics to files:',  cm_file,verbose=True)
+            print('Saving the performance metrics to files:',  cm_file)
             h = open(cm_file,'w')
             h.write(str(','.join(cols)).strip() + '\n')
             cm_to_write = p_df.to_csv(sep=',', index=False, header=None)
@@ -528,7 +550,7 @@ def calc_confusion_matrix(y_true,
             h.flush()
             h.close()
     except Exception as e:
-        log('Unable to calculate metrics:',e)
+        print('Unable to calculate metrics:',e)
         cols = ['Algorithm','eType','TW','T','P','N','TP','TN','FP','FN','ACC','BACC','Pre','Rec',
                 'TSS','HSS','AUC','WAUC',
                 'BSS','BSSC']        
@@ -537,7 +559,7 @@ def calc_confusion_matrix(y_true,
 
 def get_existing_model_tss(model_name, e_type, time_window,dir_name='models' ):
     glob_srch = dir_name+ os.sep + str(model_name) + '_model_' + str(e_type) + '_' + str(time_window) +'hr_tss_*'
-    log('glob searching for:', glob_srch)
+    # print('glob searching for:', glob_srch)
     files = []
     files_search = glob.glob(glob_srch)
     if int(tf_version[0]) > 1 :
@@ -545,11 +567,11 @@ def get_existing_model_tss(model_name, e_type, time_window,dir_name='models' ):
             if not str(f).endswith('.h5'):
                 files.append(f)    
     if len(files) == 0:
-        log('No model found for:', model_name, e_type, time_window)
+        # print('No model found for:', model_name, e_type, time_window)
         return ( -100.0, 'no_file_found')
 
     if len(files) > 1:
-        log('Warning: more than one model found for:', model_name, e_type, time_window,'will load the first one in the list')
+        print('Warning: more than one model found for:', model_name, e_type, time_window,'will load the first one in the list')
     tss = float(files[0][files[0].index('_tss_'):].replace('_'+str(time_window)+'_','').replace('.h5','').replace('_tss_',''))
     return (tss, files[0])
 
@@ -648,10 +670,10 @@ def get_val_as_string(l):
         return "N"
     return "P"
 
-def save_prediction_results(e_type, time_window, y_true,y_pred, y_calibrated_prop):
-    os.makedirs('results',exist_ok=True)
+def save_prediction_results(e_type, time_window, y_true,y_pred, y_calibrated_prop,result_dir='results'):
+    os.makedirs(result_dir,exist_ok=True)
     predictions_file= 'results' + os.sep + 'SEP_prediction_results_'+ str(e_type) +'_' + str(time_window) +'.csv'
-    log('Saving result to file:',predictions_file,verbose=True)
+    print('Saving result to file:',predictions_file)
     h =open(predictions_file,'w')
     h.write('Label,Prediction,CalibratedProbability\n')
     for i in range(len(y_true)):
@@ -669,6 +691,71 @@ def print_summary_to_file(s):
 def set_log_timestamp(t):
     global format_logging
     format_logging = t
-create_log_file('BiLSTM', '', '',dir_name='logs')
-#log('********************************  Executing Python program  ********************************',verbose=True)  
+def append_metrics(data, val, index):
+    a = data[index]
+    a.append(val) 
+    return a
+def plot_result_metrics(e_type,time_windows=[12,24,36,48,60,72],result_dir='results'):
+    data = [[],[],[],[],[],[],[],[],[],[]]
+    # print('time_windows:', time_windows)
+    for t in time_windows:
+        file = result_dir + os.sep + 'SEP_performance_metrics_BiLSTM_' + str(e_type).strip().upper() + '_' + str(t) +'.csv'
+        if not os.path.exists(file):
+            print('Error: the result file does not exist:', file,'\nPlease make sure to run the tests before plotting the results\n')
+            return False
+        m = pd.read_csv(file)
+        ACC = append_metrics(data, m['ACC'][0],0)
+        BACC =append_metrics(data, m['BACC'][0],1)
+        Pre = append_metrics(data,m['Pre'][0],2)
+        Rec = append_metrics(data,m['Rec'][0],3)
+        TSS = append_metrics(data,m['TSS'][0],4)
+        HSS =append_metrics(data, m['HSS'][0],5)
+        AUC = append_metrics(data,m['AUC'][0],6)
+        WAUC =append_metrics(data,m['WAUC'][0],7)
+        BSC = append_metrics(data,m['BSC'][0],8)
+        BSSC =append_metrics(data, m['BSSC'][0],9)
     
+    # print('WAUC:', WAUC)
+    labels = [str(t) for t in time_windows]
+    
+    dim = len(data[0])
+    dim = 6
+    w = 0.5
+    dimw = w / dim
+    # print(dimw)
+    x = np.arange(len(labels))
+    width = 0.25  # the width of the bars
+    figsize=(12//(7-len(time_windows)),5)
+    fig, ax = plt.subplots(figsize=figsize)
+    # rects2 = ax.bar(x , TSS, width,bottom=0)
+    ax.set_title('Prediction Result for ' + str(e_type).strip().upper() + '\n')
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    
+    ax.set_yticks([0.0,0.2,0.4,0.6,0.8,1.0])
+    l = [0.0,0.2,0.4,0.6,0.8,1.0]
+    s = [str(i) for i in l]
+    ax.set_yticklabels(s)
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')    
+    # for i in range(len(data[0])):
+        # y = [d[i] for d in data]
+    b = ax.bar(x , Rec, dimw, bottom=0,label='Recall', color='cornflowerblue')
+    b = ax.bar(x +dimw, Pre, dimw, bottom=0,label='Precision',color='tomato')
+    b = ax.bar(x +2*dimw, BACC, dimw, bottom=0,label='BACC',color='orange')
+    b = ax.bar(x +3*dimw, HSS, dimw, bottom=0,label='HSS',color='green')
+    b = ax.bar(x +4*dimw, TSS, dimw, bottom=0,label='TSS',color='lightcoral')
+    b = ax.bar(x +5*dimw, WAUC, dimw, bottom=0 ,label='WAUC',color='turquoise')
+    ax.legend()
+    ax.legend(bbox_to_anchor=(1, 1.05))
+    
+    # ax.bar_label(b, padding=3)
+    fig.tight_layout()
+    
+    plt.show()    
+        
+        
+
+create_log_file('BiLSTM', '', '',dir_name='logs')
+#print('********************************  Executing Python program  ********************************',verbose=True)  
+# plot_result_metrics('F_S')
