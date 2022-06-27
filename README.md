@@ -1,5 +1,5 @@
 ## Predicting Solar Energetic Particles Using SDO/HMI Vector Magnetic Data Products and a Bidirectional LSTM Network<br>
-[![DOI](https://github.com/ccsc-tools/zenodo_icons/blob/main/icons/sep.svg)](https://zenodo.org/record/6730145#.YrZxAXbMJD8)
+[![DOI](https://github.com/ccsc-tools/zenodo_icons/blob/main/icons/sep.svg)](https://zenodo.org/badge/latestdoi/503108544)
 
 
 ## Authors
