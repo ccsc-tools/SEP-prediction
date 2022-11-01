@@ -3,7 +3,7 @@
 
 
 ## Authors
-Yasser Abduallah, Vania K. Jordanova, Hao Liu, Qin Li1, Jason T. L. Wang, and Haimin Wang
+Yasser Abduallah, Vania K. Jordanova, Hao Liu, Qin Li, Jason T. L. Wang, and Haimin Wang
 
 ## Abstract
 
