@@ -22,13 +22,6 @@ proposed biLSTM network is better than related machine-learning algorithms for t
 studied here. We also discuss extensions of our approach for probabilistic forecasting and calibration with
 empirical evaluation.
 
-## Binder
-
-This notebook is Binder enabled and can be run on [mybinder.org](https://mybinder.org/) by using the link below.
-
-
-### YA_01_PredictingSEPUsingBiLSTM.ipynb (Jupyter Notebook for SEP-prediction)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ccsc-tools/SEP-prediction/HEAD?labpath=YA_01_PredictingSEPUsingBiLSTM.ipynb)
 
 Please note that starting Binder might take some time to create and start the image.
 
