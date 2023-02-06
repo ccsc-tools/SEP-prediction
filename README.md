@@ -26,12 +26,15 @@ empirical evaluation.
 For the latest updates of the tool refer to https://github.com/deepsuncode/SEP-prediction
 
 ## Installation on local machine
+To install TensorFlow with pip refer to https://www.tensorflow.org/install/pip
 
+Tested on Python 3.9.16 and the following version of libraries
 |Library | Version   | Description  |
 |---|---|---|
-|keras| 2.6.0 | Deep learning API|
-|numpy| 1.19.5| Array manipulation|
-|scikit-learn| 1.0.1| Machine learning|
-| pandas|1.4.1| Data loading and manipulation|
-| tensorboard| 2.8.0| Provides the visualization and tooling needed for machine learning|
-| tensorflow-gpu| 2.6.0| Deep learning tool for high performance computation |
+| tensorflow| 2.10.1| Deep learning tool for high performance computation |
+| tensorboard| 2.10.1| Provides the visualization and tooling needed for machine learning|
+|keras| 2.10.0 | Deep learning API|
+|scikit-learn| 1.2.1| Machine learning|
+| pandas|1.5.3| Data loading and manipulation|
+|matplotlib|3.6.3|Plotting and graphs|
+|numpy| 1.24.2| Array manipulation|
