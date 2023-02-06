@@ -5,22 +5,28 @@ Prerequisites:
 Python, Tensorflow, and Cuda:
 The initial work and implementation of the BiLSTM network was done using Python version 3.9.7, Tensorflow 2.6.0 and GPU Cuda version cuda_11.4.r11.4.
 Therefore, in order to run the default out-of-the-box models to make some predictions, you should use the exact version of Python and Tensorflow. 
-Other versions are not tested, but they should work if you have the environment set properly to run deep learning jobs.
 
 You may use the following link if still available in the Python download site to install Python version 3.9.7 for your operating system:
 https://www.python.org/downloads/release/python-397/
 
+Cuda Installation Package:
+You may download and install Cuda v 11.0 from https://developer.nvidia.com/cuda-11.0-download-archive
+
+Note: The updated version of Python and the packages are specified below.
+Tested on Python 3.9.16 
 Python Packages:
 The following python packages and modules are required to run our BiLSTM network:
-tensorboard==2.8.0
+tensorboard==2.10.1
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
-tensorflow-estimator==2.8.0
-tensorflow-gpu==2.6.0
-numpy==1.19.5
-pandas==1.4.1
-keras==2.6.0
-scikit-learn==1.0.1
+tensorflow-estimator==2.10.0
+tensorflow==2.10.1
+numpy==1.24.2
+pandas==1.5.3
+keras==2.10.0
+scikit-learn==1.2.1
+matplotlib==3.6.3
+protobuf==3.19.6
 
 To install the required packages, you may use Python package manager "pip" as follows:
 1.	Copy the above packages into a text file,  i.e., "requirements.txt"
@@ -30,14 +36,11 @@ Note: There is a requirements file already created for you to use that includes 
        The files are located in the root directory of this SEP_Package.
 Note: Python packages and libraries are sensitive to versions. Please make sure you are using the correct packages and libraries versions as specified above.
 
-Cuda Installation Package:
-You may download and install Cuda v 11.0 from https://developer.nvidia.com/cuda-11.0-download-archive
-
 Package Structure
 After downloading the files from github repository: https://github.com/deepsuncode/SEP-prediction the SEP_Package includes the following folders and files:
  
  ReadMe.txt                    - this ReadMe file.
- requirements.txt              - includes Python required packages for Python version 3.9.7.
+ requirements.txt              - includes Python required packages for Python version 3.9.16.
  models                        - directory for newly trained models. 
  default_models                - includes default trained model used during the initial work of our BiLSTM network.
  logs                          - includes the logging information.
