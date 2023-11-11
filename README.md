@@ -25,7 +25,7 @@ empirical evaluation.
 
 For the latest updates of the tool refer to https://github.com/deepsuncode/SEP-prediction
 
-### run_FlarePredict.ipynb (Jupyter Notebook for FlarePredict)
+### YA_01_PredictingSEPUsingBiLSTM.ipynb (Jupyter Notebook for SEPredict)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ccsc-tools/SEP-prediction/HEAD?labpath=YA_01_PredictingSEPUsingBiLSTM.ipynb)
 
 Please note that starting Binder might take some time to create and start the image.
